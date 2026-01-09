@@ -12,39 +12,34 @@
     }
 
     input[type="file"] {
-      display: none;
+      display: none; /* hide default file input */
     }
 
     button {
-      padding: 14px 20px;
+      padding: 14px 5%;
       font-size: 16px;
       cursor: pointer;
       margin-top: 10px;
-      background-color: #000;
-      color: #fff;
+      background-color: #000;  /* black background */
+      color: #fff;             /* white text */
       border: none;
       border-radius: 8px;
+      width: 90%;              /* fills most of container width */
+      max-width: 300px;        /* optional cap on desktop */
     }
 
     img {
-      width: 100%;
-      max-width: 100%;
+      width: 100%;            /* fills container width */
+      height: auto;           /* maintains aspect ratio */
       margin-top: 12px;
       display: none;
       border: 1px solid #ccc;
       border-radius: 8px;
     }
-
-    #instruction {
-      font-size: 14px;
-      margin-bottom: 8px;
-      color: #555;
-    }
   </style>
 </head>
 <body>
 
-  <div id="instruction">Tap the button to take a photo. You can retake if needed.</div>
   <img id="preview">
   <button id="takePhotoBtn">Take Photo</button>
   <input type="file" accept="image/*" capture="environment" id="cameraInput">
