@@ -9,6 +9,7 @@
       text-align: center;
       margin: 0;
       padding: 16px;
+      box-sizing: border-box;
     }
 
     input[type="file"] {
@@ -53,10 +54,21 @@
     const urlParams = new URLSearchParams(window.location.search);
     const targetFieldName = urlParams.get('field'); // e.g., ?field=photo_capture_1
 
+    // Function to send updated height to parent iFrame
+    function updateIframeHeight() {
+      const height = document.body.scrollHeight;
+      window.parent.postMessage(
+        { type: 'setHeight', height: height },
+        '*'
+      );
+    }
+
+    // Open camera when button is tapped
     takePhotoBtn.addEventListener('click', () => {
       cameraInput.click();
     });
 
+    // Handle photo capture
     cameraInput.addEventListener('change', () => {
       if (cameraInput.files && cameraInput.files[0]) {
         const file = cameraInput.files[0];
@@ -67,6 +79,9 @@
           preview.src = e.target.result;
           preview.style.display = 'block';
           takePhotoBtn.textContent = "Retake Photo";
+
+          // Update iFrame height
+          updateIframeHeight();
 
           // Send photo to hidden JotForm field
           if (targetFieldName && parent.document) {
@@ -86,6 +101,11 @@
         reader.readAsDataURL(file);
       }
     });
+
+    // Update height on load and resize
+    window.addEventListener('load', updateIframeHeight);
+    window.addEventListener('resize', updateIframeHeight);
+
   </script>
 
 </body>
