@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Camera Capture</title>
+  <title>Camera Capture Widget</title>
   <style>
     body {
       font-family: sans-serif;
@@ -20,17 +20,17 @@
       font-size: 16px;
       cursor: pointer;
       margin-top: 10px;
-      background-color: #000;  /* black background */
-      color: #fff;             /* white text */
+      background-color: #000;
+      color: #fff;
       border: none;
       border-radius: 8px;
-      width: 90%;              /* fills most of container width */
-      max-width: 300px;        /* optional cap on desktop */
+      width: 90%;
+      max-width: 300px;
     }
 
     img {
-      width: 100%;            /* fills container width */
-      height: auto;           /* maintains aspect ratio */
+      width: 100%;
+      height: auto;
       margin-top: 12px;
       display: none;
       border: 1px solid #ccc;
@@ -49,6 +49,10 @@
     const cameraInput = document.getElementById('cameraInput');
     const preview = document.getElementById('preview');
 
+    // Get the hidden file input name from URL query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetFieldName = urlParams.get('field'); // e.g., ?field=photo_capture_1
+
     takePhotoBtn.addEventListener('click', () => {
       cameraInput.click();
     });
@@ -57,10 +61,27 @@
       if (cameraInput.files && cameraInput.files[0]) {
         const file = cameraInput.files[0];
         const reader = new FileReader();
+
         reader.onload = function(e) {
+          // Show preview
           preview.src = e.target.result;
           preview.style.display = 'block';
           takePhotoBtn.textContent = "Retake Photo";
+
+          // Send photo to hidden JotForm field
+          if (targetFieldName && parent.document) {
+            const fileInput = parent.document.querySelector(`input[name="${targetFieldName}"]`);
+            if (fileInput) {
+              fetch(e.target.result)
+                .then(res => res.blob())
+                .then(blob => {
+                  const fileObj = new File([blob], 'photo.jpg', { type: blob.type });
+                  const dataTransfer = new DataTransfer();
+                  dataTransfer.items.add(fileObj);
+                  fileInput.files = dataTransfer.files;
+                });
+            }
+          }
         };
         reader.readAsDataURL(file);
       }
